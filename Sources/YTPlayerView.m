@@ -62,6 +62,9 @@ NSString static *const kYTPlayerOAuthRegexPattern = @"^http(s)://accounts.google
 NSString static *const kYTPlayerStaticProxyRegexPattern = @"^https://content.googleapis.com/static/proxy.html(.*)$";
 NSString static *const kYTPlayerSyndicationRegexPattern = @"^https://tpc.googlesyndication.com/sodar/(.*).html$";
 
+NSString static *const kYTPlayerMuteStateUnMutedCode = @"false";
+NSString static *const kYTPlayerMuteStateMutedCode = @"true";
+
 @interface YTPlayerView() <WKNavigationDelegate, WKUIDelegate>
 
 @property (nonatomic) NSURL *originURL;
@@ -940,6 +943,44 @@ createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration
   });
   return frameworkBundle;
 #endif
+}
+
+#pragma mark - Mute/UnMute
+
+-(void)muteVideo{
+    [self evaluateJavaScript:@"player.mute();"];
+}
+
+-(void)unMuteVideo{
+    [self evaluateJavaScript:@"player.unMute();"];
+}
+
+- (BOOL)isMuted {
+    __block BOOL isMuted = NO;
+
+    [self evaluateJavaScript:@"player.isMuted()" completionHandler:^(NSString *returnValue, NSError *error) {
+        if (!error && returnValue) {
+            isMuted = [YTPlayerView playerPlayerMuteStateForString:returnValue];
+        }
+    }];
+
+    return isMuted;
+}
+
+/**
+ * Convert a state value from NSString to the typed enum value.
+ *
+ * @param stateString A string representing player mute state. Ex: "false", "true".
+ * @return An enum value representing the player mute state.
+ */
++ (YTPlayerMuteState)playerPlayerMuteStateForString:(NSString *)stateString {
+    YTPlayerMuteState state = kYTPlayerMuteStateUnMuted;
+    if ([stateString isEqualToString:kYTPlayerMuteStateUnMutedCode]) {
+        state = kYTPlayerMuteStateUnMuted;
+    } else if ([stateString isEqualToString:kYTPlayerMuteStateMutedCode]) {
+        state = kYTPlayerMuteStateMuted;
+    }
+    return state;
 }
 
 @end
