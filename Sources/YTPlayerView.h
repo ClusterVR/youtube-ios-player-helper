@@ -52,6 +52,12 @@ typedef NS_ENUM(NSInteger, YTPlayerError) {
     kYTPlayerErrorUnknown
 };
 
+/** These enums represent the state of the current video in the player. */
+typedef NS_ENUM(NSInteger, YTPlayerMuteState) {
+    kYTPlayerMuteStateUnMuted = 0,
+    kYTPlayerMuteStateMuted = 1,
+};
+
 /** Completion handlers for player API calls. */
 typedef void (^YTIntCompletionHandler)(int result, NSError *_Nullable error);
 typedef void (^YTFloatCompletionHandler)(float result, NSError *_Nullable error);
@@ -646,5 +652,27 @@ typedef void (^YTPlaybackQualityCompletionHandler)(YTPlaybackQuality result,
  * Intended to use for testing, should not be used in production code.
  */
 - (void)removeWebView;
+
+#pragma mark - Mute/UnMute
+
+/**
+ * mute or resumes playback on the loaded video. Corresponds to this method from
+ * the JavaScript API:
+ *   https://developers.google.com/youtube/iframe_api_reference#mute
+ */
+- (void)muteVideo;
+
+/**
+ * unMute playback on a playing video. Corresponds to this method from
+ * the JavaScript API:
+ *   https://developers.google.com/youtube/iframe_api_reference#mute
+ */
+- (void)unMuteVideo;
+/**
+ * muteState playback on a playing video. Corresponds to this method from
+ * the JavaScript API:
+ *   https://developers.google.com/youtube/iframe_api_reference#mute
+ */
+- (BOOL)isMuted;
 
 @end
